@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# Parameters:
+#   BucketName:
+#     Type: "String"
+#     Default: "885248014373-mlops-bot"
+Resources:
+  QueueSQS:
+    Type: AWS::SQS::Queue
+    Properties: 
+      ContentBasedDeduplication: false
+      DelaySeconds: 3
+      FifoQueue: false
+      KmsDataKeyReusePeriodSeconds: 86400
+      KmsMasterKeyId: "alias/aws/sqs" 
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 600
+      ReceiveMessageWaitTimeSeconds: 1
+      VisibilityTimeout: 30
+  BucketS3:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Queue: !GetAtt QueueSQS.Arn
+            Filter: 
+              S3Key:
+                Rules:
+                  - Name: "prefix"
+                    Value: "tweets/"
+                  - Name: "sufix"
+                    Value: ".json"
+  SQSQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "*"
+            Action: SQS:SendMessage
+            Resource: "*"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !GetAtt BucketS3.Arn
+      Queues: 
+        - !Ref QueueSQS
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref BucketS3
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !GetAtt 'BucketS3.Arn'
+              - !Sub '${BucketS3.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+
