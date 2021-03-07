@@ -1,34 +1,32 @@
 AWSTemplateFormatVersion: "2010-09-09"
-# Parameters:
-#   BucketName:
-#     Type: "String"
-#     Default: "885248014373-mlops-bot"
 Resources:
   QueueSQS:
     Type: AWS::SQS::Queue
-    Properties: 
-      ContentBasedDeduplication: false
+    Properties:
       DelaySeconds: 3
-      FifoQueue: false
-      KmsDataKeyReusePeriodSeconds: 86400
-      KmsMasterKeyId: "alias/aws/sqs" 
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 600
       ReceiveMessageWaitTimeSeconds: 1
       VisibilityTimeout: 30
   BucketS3:
     Type: "AWS::S3::Bucket"
+    DependsOn: SQSQueuePolicy
     Properties:
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
       NotificationConfiguration:
         QueueConfigurations:
           - Event: "s3:ObjectCreated:*"
             Queue: !GetAtt QueueSQS.Arn
-            Filter: 
+            Filter:
               S3Key:
                 Rules:
                   - Name: "prefix"
                     Value: "tweets/"
-                  - Name: "sufix"
+                  - Name: "suffix"
                     Value: ".json"
   SQSQueuePolicy:
     Type: AWS::SQS::QueuePolicy
@@ -37,13 +35,14 @@ Resources:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
-            Principal:
+            Principal: 
               AWS: "*"
-            Action: SQS:SendMessage
-            Resource: "*"
+            Action: 
+              - sqs:*
+            Resource: !GetAtt QueueSQS.Arn
             Condition:
-              ArnLike:
-                aws:SourceArn: !GetAtt BucketS3.Arn
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
       Queues: 
         - !Ref QueueSQS
   BucketPolicy:
@@ -63,5 +62,66 @@ Resources:
             Condition:
               Bool:
                 'aws:SecureTransport': false
+  LambdaFunctionTweets:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        ZipFile: |
+          import json      
+      FunctionName: mlops-bot-tweets
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaFunctionTweetsRole.Arn
+      Runtime: python3.8
+      Timeout: 30
+  LambdaFunctionTweetsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: mlops-bot-tweets-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - "cloudwatch:*"
+                  - "ec2:DescribeSecurityGroups"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeVpcs"
+                  - "events:*"
+                  - "iam:GetPolicy"
+                  - "iam:GetPolicyVersion"
+                  - "iam:GetRole"
+                  - "iam:GetRolePolicy"
+                  - "iam:ListAttachedRolePolicies"
+                  - "iam:ListRolePolicies"
+                  - "iam:ListRoles"
+                  - "iam:PassRole"
+                  - "kms:ListAliases"
+                  - "lambda:*"
+                  - "logs:*"
+                  - "s3:*"
+                  - "secretsmanager:*"
+                  - "sns:ListSubscriptions"
+                  - "sns:ListSubscriptionsByTopic"
+                  - "sns:ListTopics"
+                  - "sns:Publish"
+                  - "sns:Subscribe"
+                  - "sns:Unsubscribe"
+                  - "sqs:ListQueues"
+                  - "sqs:SendMessage"
+                  - "tag:GetResources"
+                Resource: '*'
+      MaxSessionDuration: 3600 
 
 
