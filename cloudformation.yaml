@@ -71,6 +71,9 @@ Resources:
       Code:
         ImageUri: 885248014373.dkr.ecr.us-east-1.amazonaws.com/mlopsbot/tweets:latest
       Timeout: 30
+      Environment: 
+         Variables: 
+            BUCKET: !Ref BucketS3
   LambdaFunctionTweetsRole:
     Type: AWS::IAM::Role
     Properties:

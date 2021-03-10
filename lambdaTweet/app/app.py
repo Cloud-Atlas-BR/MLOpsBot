@@ -1,8 +1,11 @@
+import os
 import json
 import boto3
 import tweepy
 from secrets_manager import get_secret
 from botocore.config import Config
+
+BUCKET_NAME = os.environ.get('BUCKET')
 
 # Create interface with services
 s3 = boto3.client("s3")
@@ -32,7 +35,7 @@ def handler(event, context):
 
     for tweet in tweets:
         print(tweet)
-        s3.put_object(Bucket='mlops-bot-buckets3-7yyc0rjc17i8',
+        s3.put_object(Bucket=BUCKET_NAME,
                     Body=json.dumps(tweet).encode('utf-8'),
                     Key="tweets/"+tweet['id_str']+".json")
     
