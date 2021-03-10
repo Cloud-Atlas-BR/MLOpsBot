@@ -53,8 +53,9 @@ jobs:
         run: | 
           pip install boto3
           DIGEST_TWEET="eval $(python digest.py)"
+          echo $DIGEST_TWEET
           aws cloudformation deploy \
             --stack-name mlops-bot \
             --template-file cloudformation.yaml \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides DigestTweet=${DIGEST_TWEET}
+            --parameter-overrides DigestTweet=$DIGEST_TWEET
