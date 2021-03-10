@@ -36,12 +36,9 @@ jobs:
           docker tag ${REPO_NAME_RETWEETS}:latest ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
           docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
 
-
-        
-
-      # - name: Create or update lambda function
-      #   run: | 
-      #     aws cloudformation deploy \
-      #       --stack-name discovery-lambda-stack \
-      #       --template-file lambda.yml \
-      #       --capabilities CAPABILITY_NAMED_IAM
+      - name: Create or update lambda function
+        run: | 
+          aws cloudformation deploy \
+            --stack-name mlops-bot \
+            --template-file cloudformation.yaml \
+            --capabilities CAPABILITY_NAMED_IAM
