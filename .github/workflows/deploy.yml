@@ -52,7 +52,8 @@ jobs:
       - name: Create or update lambda function
         run: | 
           pip install boto3
-          DIGEST_TWEET="eval $(python digest.py)"
+          alias setblahblahenv="eval $(python digest.py)"
+          setblahblahenv
           echo $DIGEST_TWEET
           aws cloudformation deploy \
             --stack-name mlops-bot \
