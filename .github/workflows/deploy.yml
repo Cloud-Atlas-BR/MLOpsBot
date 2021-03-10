@@ -27,6 +27,18 @@ jobs:
           docker tag ${REPO_NAME_TWEETS}:latest ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_TWEETS}:latest
           docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_TWEETS}:latest
 
+      - name: Build and Push Image - Retweets
+        run: |
+          export REPO_NAME_RETWEETS=mlopsbot/retweets
+          aws ecr describe-repositories --repository-names ${REPO_NAME_RETWEETS} || aws ecr create-repository --repository-name ${REPO_NAME_RETWEETS}
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+          cd lambdaRetweet && docker build -t ${REPO_NAME_RETWEETS} . && cd ..
+          docker tag ${REPO_NAME_RETWEETS}:latest ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
+          docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
+
+
+        
+
       # - name: Create or update lambda function
       #   run: | 
       #     aws cloudformation deploy \
