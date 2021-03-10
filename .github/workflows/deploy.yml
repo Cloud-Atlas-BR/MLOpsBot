@@ -37,6 +37,7 @@ jobs:
           docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
 
   deploy:
+    needs: build
     runs-on: ubuntu-20.04
     steps:      
       - name: Checkout
