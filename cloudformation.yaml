@@ -118,6 +118,7 @@ Resources:
                   - "sqs:ListQueues"
                   - "sqs:SendMessage"
                   - "tag:GetResources"
+                  - "ssm:GetParameter"
                 Resource: '*'
       MaxSessionDuration: 3600 
 
