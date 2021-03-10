@@ -1,4 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  DigestTweet:
+    Type: String
 Resources:
   QueueSQS:
     Type: AWS::SQS::Queue
@@ -69,7 +72,7 @@ Resources:
       Role: !GetAtt LambdaFunctionTweetsRole.Arn
       PackageType: Image
       Code:
-        ImageUri: 885248014373.dkr.ecr.us-east-1.amazonaws.com/mlopsbot/tweets:latest
+        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mlopsbot/tweets@${DigestTweet}
       Timeout: 30
       Environment: 
          Variables: 
