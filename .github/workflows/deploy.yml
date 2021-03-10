@@ -23,7 +23,7 @@ jobs:
           export REPO_NAME_TWEETS=mlopsbot/tweets
           aws ecr describe-repositories --repository-names ${REPO_NAME_TWEETS} || aws ecr create-repository --repository-name ${REPO_NAME_TWEETS}
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-          docker build -t ${REPO_NAME_TWEETS} -f lambdaTweet/Dockerfile
+          cd lambdaTweet && docker build -t ${REPO_NAME_TWEETS} . && cd ..
           docker tag ${REPO_NAME_TWEETS}:latest ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_TWEETS}:latest
           docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_TWEETS}:latest
 
