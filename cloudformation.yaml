@@ -118,8 +118,11 @@ Resources:
                   - "sqs:ListQueues"
                   - "sqs:SendMessage"
                   - "tag:GetResources"
-                  - "ssm:GetParameter"
                 Resource: '*'
+              - Effect: Allow
+                Action: 
+                  - "ssm:GetParameter"
+                Resource: "arn:aws:ssm:us-east-1:885248014373:parameter/mlops-bot-since-id"
       MaxSessionDuration: 3600 
 
 
