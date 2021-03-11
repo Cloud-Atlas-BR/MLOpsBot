@@ -207,3 +207,26 @@ Resources:
       Enabled: true
       EventSourceArn: !GetAtt QueueSQS.Arn
       FunctionName: !GetAtt LambdaFunctionRetweets.Arn
+  ScheduledRule: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: "ScheduledRule"
+      ScheduleExpression: "rate(10 minutes)"
+      State: "ENABLED"
+      Targets: 
+        - 
+          Arn: 
+            Fn::GetAtt: 
+              - "LambdaFunctionTweets"
+              - "Arn"
+          Id: "TargetFunctionV1"
+  PermissionForEventsToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref LambdaFunctionTweets
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "ScheduledRule"
+          - "Arn"
