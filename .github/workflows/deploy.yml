@@ -49,7 +49,7 @@ jobs:
           docker tag ${REPO_NAME_RETWEETS}:latest ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
           docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME_RETWEETS}:latest
 
-  deploy:
+  deploy-tweet:
     needs: [build-tweet, build-retweet]
     runs-on: ubuntu-20.04
     steps:      
@@ -68,10 +68,13 @@ jobs:
           pip install boto3
           shopt -s expand_aliases
           alias setblahblahenva="eval $(python digest.py)"
+          alias setblahblahenvab="eval $(python digest2.py)"
           setblahblahenva
+          setblahblahenvab
           echo $DIGEST_TWEET
+          echo $DIGEST_RETWEET
           aws cloudformation deploy \
             --stack-name mlops-bot \
             --template-file cloudformation.yaml \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides DigestTweet=$DIGEST_TWEET
+            --parameter-overrides DigestTweet=$DIGEST_TWEET DigestRetweet=$DIGEST_RETWEET

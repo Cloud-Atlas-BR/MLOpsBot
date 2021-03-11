@@ -2,6 +2,8 @@ AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
   DigestTweet:
     Type: String
+  DigestRetweet:
+    Type: String
 Resources:
   QueueSQS:
     Type: AWS::SQS::Queue
@@ -78,6 +80,72 @@ Resources:
          Variables: 
             BUCKET: !Ref BucketS3
   LambdaFunctionTweetsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: mlops-bot-tweets-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - "cloudwatch:*"
+                  - "ec2:DescribeSecurityGroups"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeVpcs"
+                  - "events:*"
+                  - "iam:GetPolicy"
+                  - "iam:GetPolicyVersion"
+                  - "iam:GetRole"
+                  - "iam:GetRolePolicy"
+                  - "iam:ListAttachedRolePolicies"
+                  - "iam:ListRolePolicies"
+                  - "iam:ListRoles"
+                  - "iam:PassRole"
+                  - "kms:ListAliases"
+                  - "lambda:*"
+                  - "logs:*"
+                  - "s3:*"
+                  - "secretsmanager:*"
+                  - "sns:ListSubscriptions"
+                  - "sns:ListSubscriptionsByTopic"
+                  - "sns:ListTopics"
+                  - "sns:Publish"
+                  - "sns:Subscribe"
+                  - "sns:Unsubscribe"
+                  - "sqs:ListQueues"
+                  - "sqs:SendMessage"
+                  - "tag:GetResources"
+                Resource: '*'
+              - Effect: Allow
+                Action: 
+                  - "ssm:GetParameter"
+                  - "ssm:PutParameter"
+                Resource: "arn:aws:ssm:us-east-1:885248014373:parameter/mlops-bot-since-id"
+      MaxSessionDuration: 3600
+  LambdaFunctionRetweets:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: mlops-bot-retweets
+      Role: !GetAtt LambdaFunctionRetweetsRole.Arn
+      PackageType: Image
+      Code:
+        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mlopsbot/retweets@${DigestRetweet}
+      Timeout: 30
+      Environment: 
+         Variables: 
+            BUCKET: !Ref BucketS3
+  LambdaFunctionRetweetsRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
