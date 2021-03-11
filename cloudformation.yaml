@@ -192,6 +192,7 @@ Resources:
                   - "sqs:ListQueues"
                   - "sqs:SendMessage"
                   - "tag:GetResources"
+                  - "sqs:*"
                 Resource: '*'
               - Effect: Allow
                 Action: 
