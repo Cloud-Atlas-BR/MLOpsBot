@@ -16,7 +16,7 @@ auth.set_access_token(secrets["ACCESS_TOKEN"], secrets["ACCESS_TOKEN_SECRET"])
 # Instancia o cliente do Twitter
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
-def lambda_handler(event, context):
+def handler(event, context):
 
     for msg in event["Records"]:
         body = json.loads(msg["body"])["Records"][0]
