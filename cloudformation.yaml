@@ -199,5 +199,10 @@ Resources:
                   - "ssm:PutParameter"
                 Resource: "arn:aws:ssm:us-east-1:885248014373:parameter/mlops-bot-since-id"
       MaxSessionDuration: 3600 
-
-
+  LambdaFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 10
+      Enabled: true
+      EventSourceArn: !GetAtt QueueSQS.Arn
+      FunctionName: !GetAtt LambdaFunctionRetweets.Arn

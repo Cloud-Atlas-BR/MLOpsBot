@@ -9,7 +9,7 @@ BUCKET_NAME = os.environ.get('BUCKET')
 
 # Create interface with services
 s3 = boto3.client("s3")
-ssm = boto3.client("ssm", config=Config(region_name = 'us-east-1'))
+#ssm = boto3.client("ssm", config=Config(region_name = 'us-east-1'))
 
 # Get twitter secrets
 secrets = get_secret()
@@ -23,15 +23,17 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 def handler(event, context):
 
-    since_id = ssm.get_parameter(Name="mlops-bot-since-id")["Parameter"]["Value"]
+    #since_id = ssm.get_parameter(Name="mlops-bot-since-id")["Parameter"]["Value"]
 
     results = api.search(q="#mlops -filter:retweets", 
                          result_type="recent", 
-                         count=3, 
-                         since_id=since_id)
+                         count=50
+                        #  , 
+                        #  since_id=since_id
+                        )
 
     tweets = results["statuses"]
-    next_since_id = results["search_metadata"]["max_id_str"]
+    #next_since_id = results["search_metadata"]["max_id_str"]
 
     for tweet in tweets:
         print(tweet)
@@ -39,7 +41,7 @@ def handler(event, context):
                     Body=json.dumps(tweet).encode('utf-8'),
                     Key="tweets/"+tweet['id_str']+".json")
     
-    ssm.put_parameter(Name="mlops-bot-since-id", Value=next_since_id, Overwrite=True)
+    #ssm.put_parameter(Name="mlops-bot-since-id", Value=next_since_id, Overwrite=True)
 
     return {
 
