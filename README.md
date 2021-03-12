@@ -1,3 +1,3 @@
-![](https://i.imgur.com/bxIp6rI.png)
+![](https://i.imgur.com/xMsWuSI.png)
 
 # MLOpsBot
