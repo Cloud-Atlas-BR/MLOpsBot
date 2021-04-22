@@ -17,7 +17,7 @@ auth.set_access_token(secrets["ACCESS_TOKEN"], secrets["ACCESS_TOKEN_SECRET"])
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 def handler(event, context):
-
+    print(event, flush=True)
     for msg in event["Records"]:
         body = json.loads(msg["body"])["Records"][0]
         bucket = body["s3"]["bucket"]["name"]
