@@ -24,9 +24,9 @@ def handler(event, context):
         key = body["s3"]["object"]["key"]
         tweet = s3.get_object(Bucket=bucket, Key=key)
         content = json.loads(tweet["Body"].read().decode("utf-8"))
-        print(content)
         try:
             api.retweet(id=content["id"])
+            print(content)
         except:
             pass
 
