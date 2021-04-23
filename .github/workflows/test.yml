@@ -38,4 +38,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Retweet Lambda Image Build Test
-        run: ./scripts/build_push.sh -r mlopsbot/retweets -a ${{ secrets.ACCOUNT_ID }} -c app/lambdaRetweet -g us-east-1 -t True
+        run: | 
+          ./scripts/build_push.sh \
+            -r ${{ env.ECR_REPO }} \
+            -a ${{ secrets.ACCOUNT_ID }} \
+            -c ${{ env.DOCKER_CTX }} \
+            -g ${{ env.AWS_REGION }} \
+            -t True
