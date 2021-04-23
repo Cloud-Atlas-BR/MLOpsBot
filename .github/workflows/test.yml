@@ -3,7 +3,7 @@ on:
   push:
     branches: [ develop ]
 jobs:
-  build-tweet:
+  TweetImageBuild:
     runs-on: ubuntu-20.04
     env:
       AWS_REGION: us-east-1
@@ -26,8 +26,12 @@ jobs:
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
             -t True
-  build-retweet:
+  RetweetImageBuild:
     runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/retweets
+      DOCKER_CTX: app/lambdaRetweet
     steps:      
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,7 +40,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
       - name: Retweet Lambda Image Build Test
         run: | 
           ./scripts/build_push.sh \
@@ -45,3 +49,21 @@ jobs:
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
             -t True
+  ValidateCloudformation:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      CFN_FILE: infra/cloudformation.yaml
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check Cloudformation
+        run: | 
+          aws cloudformation validate-template \ 
+            --template-body file://${{ env.CFN_FILE }}
