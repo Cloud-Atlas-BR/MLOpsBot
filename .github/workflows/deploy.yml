@@ -1,4 +1,4 @@
-name: ML Lambda Container Deploy
+name: MLOps Bot Deploy
 on:
   push:
     branches: [ main ]
