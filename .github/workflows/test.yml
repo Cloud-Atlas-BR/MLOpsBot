@@ -1,0 +1,31 @@
+name: ML Lambda Container Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-tweet:
+    runs-on: ubuntu-20.04
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and Push Image - Get Tweets
+        run: ./scripts/build_push.sh -r mlopsbot/tweets -a ${{ secrets.ACCOUNT_ID }} -c app/lambdaTweet -g us-east-1 -t True
+  build-retweet:
+    runs-on: ubuntu-20.04
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and Push Image - Retweets
+        run: ./scripts/build_push.sh -r mlopsbot/retweets -a ${{ secrets.ACCOUNT_ID }} -c app/lambdaRetweet -g us-east-1 -t True
