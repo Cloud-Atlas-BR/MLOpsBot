@@ -22,7 +22,7 @@ jobs:
         run: | 
           ./scripts/build_push.sh \
             -r ${{ env.ECR_REPO }} \
-            -a ${{ secrets.ACCOUNT_ID }} 
+            -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
             -t True
