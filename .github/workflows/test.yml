@@ -1,7 +1,7 @@
 name: ML Lambda Container Deploy
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
 jobs:
   build-tweet:
     runs-on: ubuntu-20.04
