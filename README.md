@@ -1,5 +1,3 @@
 ![](https://i.imgur.com/xMsWuSI.png)
 
-# MLOpsBot
-
-MLOps Bot
+# MLOps Bot

@@ -127,11 +127,6 @@ Resources:
                   - "sqs:SendMessage"
                   - "tag:GetResources"
                 Resource: '*'
-              - Effect: Allow
-                Action: 
-                  - "ssm:GetParameter"
-                  - "ssm:PutParameter"
-                Resource: "arn:aws:ssm:us-east-1:885248014373:parameter/mlops-bot-since-id"
       MaxSessionDuration: 3600
   LambdaFunctionRetweets:
     Type: AWS::Lambda::Function
@@ -142,9 +137,6 @@ Resources:
       Code:
         ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mlopsbot/retweets@${DigestRetweet}
       Timeout: 30
-      Environment: 
-         Variables: 
-            BUCKET: !Ref BucketS3
   LambdaFunctionRetweetsRole:
     Type: AWS::IAM::Role
     Properties:
@@ -194,16 +186,11 @@ Resources:
                   - "tag:GetResources"
                   - "sqs:*"
                 Resource: '*'
-              - Effect: Allow
-                Action: 
-                  - "ssm:GetParameter"
-                  - "ssm:PutParameter"
-                Resource: "arn:aws:ssm:us-east-1:885248014373:parameter/mlops-bot-since-id"
       MaxSessionDuration: 3600 
   LambdaFunctionEventSourceMapping:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
-      BatchSize: 10
+      BatchSize: !Ref BatchSize
       Enabled: true
       EventSourceArn: !GetAtt QueueSQS.Arn
       FunctionName: !GetAtt LambdaFunctionRetweets.Arn
@@ -211,7 +198,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties: 
       Description: "ScheduledRule"
-      ScheduleExpression: "rate(10 minutes)"
+      ScheduleExpression: !Ref ScheduleExpression
       State: "ENABLED"
       Targets: 
         - 
