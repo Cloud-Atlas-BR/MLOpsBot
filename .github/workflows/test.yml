@@ -1,7 +1,7 @@
 name: Test and Validation
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, main ]
 jobs:
   TweetImageBuild:
     runs-on: ubuntu-20.04
@@ -65,5 +65,5 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Check Cloudformation
         run: | 
-          aws cloudformation validate-template \ 
-            --template-body file://${{ env.CFN_FILE }}
+          aws cloudformation validate-template --template-body \
+            file://${{ env.CFN_FILE }}
