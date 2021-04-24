@@ -1,7 +1,7 @@
 [
     {
       "ParameterKey": "ScheduleExpression",
-      "ParameterValue": "rate(10 minutes)"
+      "ParameterValue": "10"
     }, 
     {
       "ParameterKey": "BatchSize",

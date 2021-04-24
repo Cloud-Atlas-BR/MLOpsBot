@@ -4,6 +4,10 @@ Parameters:
     Type: String
   DigestRetweet:
     Type: String
+  BatchSize:
+    Type: String
+  ScheduleExpression:
+    Type: String
 Resources:
   QueueSQS:
     Type: AWS::SQS::Queue
