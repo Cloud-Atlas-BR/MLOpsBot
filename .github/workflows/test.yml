@@ -67,3 +67,21 @@ jobs:
         run: | 
           aws cloudformation validate-template --template-body \
             file://${{ env.CFN_FILE }}
+  GetTweetImageDigest:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/tweets
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check Tweet Image Digest
+        run: | 
+          ./scripts/image_digest.sh
+          printenv
