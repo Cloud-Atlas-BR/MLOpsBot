@@ -13,7 +13,7 @@ do
     esac
 done
 
-docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} .
+docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
 docker run -p 9000:8080 ${repository}
 
 if [ -z $test ]

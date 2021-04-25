@@ -3,42 +3,42 @@ on:
   push:
     branches: [ develop ]
 jobs:
-  UnitTestsStyle:
-    runs-on: ubuntu-20.04
-    steps:      
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Tweet Collection Image Build
-        run: |
-          pip install flake8
-          flake8 app/
-  TweetImageBuild:
-    runs-on: ubuntu-20.04
-    needs: [UnitTestsStyle, ValidateCloudformation]
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPO: mlopsbot/tweets
-      DOCKER_CTX: app/lambdaTweet
-    steps:      
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials from your account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Tweet Collection Image Build
-        run: | 
-          ./scripts/build_push.sh \
-            -r ${{ env.ECR_REPO }} \
-            -a ${{ secrets.ACCOUNT_ID }} \
-            -c ${{ env.DOCKER_CTX }} \
-            -g ${{ env.AWS_REGION }} \
-            -t True
+  # UnitTestsStyle:
+  #   runs-on: ubuntu-20.04
+  #   steps:      
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Tweet Collection Image Build
+  #       run: |
+  #         pip install flake8
+  #         flake8 app/
+  # TweetImageBuild:
+  #   runs-on: ubuntu-20.04
+  #   needs: [UnitTestsStyle, ValidateCloudformation]
+  #   env:
+  #     AWS_REGION: us-east-1
+  #     ECR_REPO: mlopsbot/tweets
+  #     DOCKER_CTX: app/lambdaTweet
+  #   steps:      
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Configure AWS credentials from your account
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #     - name: Tweet Collection Image Build
+  #       run: | 
+  #         ./scripts/build_push.sh \
+  #           -r ${{ env.ECR_REPO }} \
+  #           -a ${{ secrets.ACCOUNT_ID }} \
+  #           -c ${{ env.DOCKER_CTX }} \
+  #           -g ${{ env.AWS_REGION }} \
+  #           -t True
   RetweetImageBuild:
     runs-on: ubuntu-20.04
-    needs: [UnitTestsStyle, ValidateCloudformation]
+    # needs: [UnitTestsStyle, ValidateCloudformation]
     env:
       AWS_REGION: us-east-1
       ECR_REPO: mlopsbot/retweets
@@ -59,59 +59,61 @@ jobs:
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
-            -t True
-  ValidateCloudformation:
-    runs-on: ubuntu-20.04
-    needs: [GetTweetImageDigest, GetRetweetImageDigest, UnitTestsStyle]
-    env:
-      AWS_REGION: us-east-1
-      CFN_FILE: infra/cloudformation.yaml
-    steps:      
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials from your account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Check Cloudformation
-        run: | 
-          aws cloudformation validate-template --template-body \
-            file://${{ env.CFN_FILE }}
-  GetTweetImageDigest:
-    runs-on: ubuntu-20.04
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPO: mlopsbot/tweets
-    steps:      
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials from your account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Check Tweet Image Digest
-        run: | 
-          export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
-          echo $DIG_TWEET
-  GetRetweetImageDigest:
-    runs-on: ubuntu-20.04
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPO: mlopsbot/retweets
-    steps:      
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials from your account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Check Tweet Image Digest
-        run: | 
-          export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
-          echo $DIG_RETWEET
+            -t True \
+            -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  # ValidateCloudformation:
+  #   runs-on: ubuntu-20.04
+  #   needs: [GetTweetImageDigest, GetRetweetImageDigest, UnitTestsStyle]
+  #   env:
+  #     AWS_REGION: us-east-1
+  #     CFN_FILE: infra/cloudformation.yaml
+  #   steps:      
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Configure AWS credentials from your account
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #     - name: Check Cloudformation
+  #       run: | 
+  #         aws cloudformation validate-template --template-body \
+  #           file://${{ env.CFN_FILE }}
+  # GetTweetImageDigest:
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #     AWS_REGION: us-east-1
+  #     ECR_REPO: mlopsbot/tweets
+  #   steps:      
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Configure AWS credentials from your account
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #     - name: Check Tweet Image Digest
+  #       run: | 
+  #         export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
+  #         echo $DIG_TWEET
+  # GetRetweetImageDigest:
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #     AWS_REGION: us-east-1
+  #     ECR_REPO: mlopsbot/retweets
+  #   steps:      
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Configure AWS credentials from your account
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #     - name: Check Tweet Image Digest
+  #       run: | 
+  #         export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
+  #         echo $DIG_RETWEET
