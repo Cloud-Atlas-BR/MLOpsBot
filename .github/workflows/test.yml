@@ -3,15 +3,15 @@ on:
   push:
     branches: [ develop ]
 jobs:
-  # UnitTestsStyle:
-  #   runs-on: ubuntu-20.04
-  #   steps:      
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Tweet Collection Image Build
-  #       run: |
-  #         pip install flake8
-  #         flake8 app/
+  UnitTestsStyle:
+    runs-on: ubuntu-20.04
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Tweet Collection Image Build
+        run: |
+          pip install flake8
+          flake8 --ignore E501 app/
   # TweetImageBuild:
   #   runs-on: ubuntu-20.04
   #   needs: [UnitTestsStyle, ValidateCloudformation]

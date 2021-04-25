@@ -27,11 +27,8 @@ def handler(event, context):
         content = json.loads(tweet["Body"].read().decode("utf-8"))
         try:
             api.retweet(id=content["id"])
-            print(content)
+            print(content, flush=True)
         except Exception:
-            print("Just done")
+            print("Just done", flush=True)
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+    return {'statusCode': 200}

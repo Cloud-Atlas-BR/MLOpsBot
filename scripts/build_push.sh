@@ -13,11 +13,12 @@ do
     esac
 done
 
-docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
-docker run -d -p 9000:8080 ${repository}
-response=$(curl -H "Content-Type: application/json" -d @app/lambdaRetweet/tests/msg.json -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations")
-
-if [ response == {"statusCode": 200, "body": "\"Hello from Lambda!\""} ]; then echo Ok; else exit 0; fi
+if [ $test == True]
+then
+    docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
+    docker run -d -p 9000:8080 ${repository}
+    pytest
+fi
 
 if [ -z $test ]
 then
