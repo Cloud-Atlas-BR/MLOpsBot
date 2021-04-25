@@ -7,9 +7,9 @@ do
         a) account=${OPTARG};;
         c) context=${OPTARG};;
         g) region=${OPTARG};;
-        t) test=${OPTARG};;,
-        k) key=${OPTARG};;,
-        s) secret=${OPTARG};;,
+        t) test=${OPTARG};;
+        k) key=${OPTARG};;
+        s) secret=${OPTARG};;
     esac
 done
 
