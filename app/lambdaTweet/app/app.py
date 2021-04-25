@@ -1,4 +1,3 @@
-import os
 import json
 import boto3
 import tweepy
@@ -7,7 +6,7 @@ from botocore.config import Config
 
 # Create interface with services
 s3 = boto3.client("s3")
-ssm = boto3.client("ssm", config=Config(region_name = 'us-east-1'))
+ssm = boto3.client("ssm", config=Config(region_name='us-east-1'))
 
 # Get twitter secrets
 secrets = get_secret()
@@ -19,12 +18,14 @@ auth.set_access_token(secrets["ACCESS_TOKEN"], secrets["ACCESS_TOKEN_SECRET"])
 # Instancia o cliente do Twitter
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
+
 def handler(event, context):
 
-    bucket_name = ssm.get_parameter(Name="/CloudAtlas/MLOpsBot/Bucket")["Parameter"]["Value"]
+    ssm_name = "/CloudAtlas/MLOpsBot/Bucket"
+    bucket_name = ssm.get_parameter(Name=ssm_name)["Parameter"]["Value"]
 
-    results = api.search(q="#mlops -filter:retweets", 
-                         result_type="recent", 
+    results = api.search(q="#mlops -filter:retweets",
+                         result_type="recent",
                          count=50)
 
     tweets = results["statuses"]
@@ -32,12 +33,10 @@ def handler(event, context):
     for tweet in tweets:
         print(tweet)
         s3.put_object(Bucket=bucket_name,
-                    Body=json.dumps(tweet).encode('utf-8'),
-                    Key="tweets/"+tweet['id_str']+".json")
-    
-    return {
+                      Body=json.dumps(tweet).encode('utf-8'),
+                      Key="tweets/"+tweet['id_str']+".json")
 
+    return {
         'statusCode': 200,
         'body': json.dumps(event)
-        
     }

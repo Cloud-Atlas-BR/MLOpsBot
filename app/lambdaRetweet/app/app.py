@@ -16,6 +16,7 @@ auth.set_access_token(secrets["ACCESS_TOKEN"], secrets["ACCESS_TOKEN_SECRET"])
 # Instancia o cliente do Twitter
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
+
 def handler(event, context):
     print(event, flush=True)
     for msg in event["Records"]:
@@ -27,8 +28,8 @@ def handler(event, context):
         try:
             api.retweet(id=content["id"])
             print(content)
-        except:
-            pass
+        except Exception:
+            print("Just done")
 
     return {
         'statusCode': 200,
