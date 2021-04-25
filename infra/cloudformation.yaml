@@ -6,8 +6,10 @@ Parameters:
     Type: String
   BatchSize:
     Type: String
+    Default: 10
   ScheduleExpression:
     Type: String
+    Default: rate(10 minutes) 
 Resources:
   QueueSQS:
     Type: AWS::SQS::Queue

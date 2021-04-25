@@ -2,9 +2,15 @@ name: MLOps Bot Deploy
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
-  build-tweet:
+  TweetImagePush:
     runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/tweets
+      DOCKER_CTX: app/lambdaTweet
     steps:      
       - name: Checkout
         uses: actions/checkout@v2
@@ -13,11 +19,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Build and Push Image - Get Tweets
-        run: ./scripts/build_push.sh -r mlopsbot/tweets -a ${{ secrets.ACCOUNT_ID }} -c app/lambdaTweet -g us-east-1
-  build-retweet:
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Tweet Collection Image Build
+        run: | 
+          ./scripts/build_push.sh \
+            -r ${{ env.ECR_REPO }} \
+            -a ${{ secrets.ACCOUNT_ID }} \
+            -c ${{ env.DOCKER_CTX }} \
+            -g ${{ env.AWS_REGION }}
+  RetweetImagePush:
     runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/retweets
+      DOCKER_CTX: app/lambdaRetweet
     steps:      
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,12 +41,23 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Build and Push Image - Retweets
-        run: ./scripts/build_push.sh -r mlopsbot/retweets -a ${{ secrets.ACCOUNT_ID }} -c app/lambdaRetweet -g us-east-1
-  deploy-tweet:
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Retweet Lambda Image Build Test
+        run: | 
+          ./scripts/build_push.sh \
+            -r ${{ env.ECR_REPO }} \
+            -a ${{ secrets.ACCOUNT_ID }} \
+            -c ${{ env.DOCKER_CTX }} \
+            -g ${{ env.AWS_REGION }}
+  DeployMlopsBot:
     needs: [build-tweet, build-retweet]
     runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_TWEET: mlopsbot/tweets
+      ECR_RETWEET: mlopsbot/retweets
+      STACK_NAME: mlops-bot
+      CFN_FILE: infra/cloudformation.yaml
     steps:      
       - name: Checkout
         uses: actions/checkout@v2
@@ -40,19 +66,15 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
       - name: Create or update lambda function
         run: | 
-          pip install boto3
-          shopt -s expand_aliases
-          alias setblahblahenva="eval $(python digest.py)"
-          alias setblahblahenvab="eval $(python digest2.py)"
-          setblahblahenva
-          setblahblahenvab
-          echo $DIGEST_TWEET
-          echo $DIGEST_RETWEET
+          export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
+          export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
           aws cloudformation deploy \
-            --stack-name mlops-bot \
-            --template-file cloudformation.yaml \
+            --stack-name ${{ env.STACK_NAME }}) \
+            --template-file ${{ env.CFN_FILE }} \
             --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides DigestTweet=$DIGEST_TWEET DigestRetweet=$DIGEST_RETWEET
+            --parameter-overrides \
+                DigestTweet=$DIG_TWEET \
+                DigestRetweet=$DIG_RETWEET
