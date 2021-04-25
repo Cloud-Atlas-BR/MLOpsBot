@@ -17,6 +17,7 @@ if [ $test == True ]
 then
     docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
     docker run -d -p 9000:8080 ${repository}
+    pip install pytest
     pytest
 fi
 
