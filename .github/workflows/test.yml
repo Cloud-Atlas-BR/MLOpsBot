@@ -3,8 +3,17 @@ on:
   push:
     branches: [ develop, main ]
 jobs:
+  UnitTestsStyle:
+    runs-on: ubuntu-20.04
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Tweet Collection Image Build
+        run: | 
+          flake8 app/
   TweetImageBuild:
     runs-on: ubuntu-20.04
+    needs: [UnitTestsStyle, ValidateCloudformation]
     env:
       AWS_REGION: us-east-1
       ECR_REPO: mlopsbot/tweets
@@ -28,6 +37,7 @@ jobs:
             -t True
   RetweetImageBuild:
     runs-on: ubuntu-20.04
+    needs: [UnitTestsStyle, ValidateCloudformation]
     env:
       AWS_REGION: us-east-1
       ECR_REPO: mlopsbot/retweets
