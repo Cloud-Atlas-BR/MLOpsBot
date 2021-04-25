@@ -1,11 +1,9 @@
-name: MLOps Bot Deploy
+name: Test and Validation
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ develop, main ]
 jobs:
-  TweetImagePush:
+  TweetImageBuild:
     runs-on: ubuntu-20.04
     env:
       AWS_REGION: us-east-1
@@ -26,8 +24,9 @@ jobs:
             -r ${{ env.ECR_REPO }} \
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
-            -g ${{ env.AWS_REGION }}
-  RetweetImagePush:
+            -g ${{ env.AWS_REGION }} \
+            -t True
+  RetweetImageBuild:
     runs-on: ubuntu-20.04
     env:
       AWS_REGION: us-east-1
@@ -48,15 +47,12 @@ jobs:
             -r ${{ env.ECR_REPO }} \
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
-            -g ${{ env.AWS_REGION }}
-  DeployMlopsBot:
-    needs: [build-tweet, build-retweet]
+            -g ${{ env.AWS_REGION }} \
+            -t True
+  ValidateCloudformation:
     runs-on: ubuntu-20.04
     env:
       AWS_REGION: us-east-1
-      ECR_TWEET: mlopsbot/tweets
-      ECR_RETWEET: mlopsbot/retweets
-      STACK_NAME: mlops-bot
       CFN_FILE: infra/cloudformation.yaml
     steps:      
       - name: Checkout
@@ -67,14 +63,43 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      - name: Create or update lambda function
+      - name: Check Cloudformation
         run: | 
-          export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
-          export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
-          aws cloudformation deploy \
-            --stack-name ${{ env.STACK_NAME }}) \
-            --template-file ${{ env.CFN_FILE }} \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides \
-                DigestTweet=$DIG_TWEET \
-                DigestRetweet=$DIG_RETWEET
+          aws cloudformation validate-template --template-body \
+            file://${{ env.CFN_FILE }}
+  GetTweetImageDigest:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/tweets
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check Tweet Image Digest
+        run: | 
+          export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
+          echo $DIG_TWEET
+  GetRetweetImageDigest:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/retweets
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check Tweet Image Digest
+        run: | 
+          export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_REPO }})
+          echo $DIG_RETWEET
