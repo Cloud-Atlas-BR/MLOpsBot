@@ -34,7 +34,7 @@ def handler(event, context):
         print(tweet)
         s3.put_object(Bucket=bucket_name,
                       Body=json.dumps(tweet).encode('utf-8'),
-                      Key="tweets/"+tweet['id_str']+".json")
+                      Key="tweets/" + tweet['id_str'] + ".json")
 
     return {
         'statusCode': 200,
