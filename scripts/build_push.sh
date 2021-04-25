@@ -9,7 +9,7 @@ do
         g) region=${OPTARG};;
         t) test=${OPTARG};;
         k) key=${OPTARG};;
-        s) secret=${OPTARG};;
+        s) secret=${OPTARG}
     esac
 done
 
@@ -18,7 +18,7 @@ then
     docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
     docker run -d -p 9000:8080 ${repository}
     pip install pytest
-    pytest
+    pytest ${context}
 fi
 
 if [ -z $test ]
