@@ -50,7 +50,7 @@ jobs:
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }}
   DeployMlopsBot:
-    needs: [build-tweet, build-retweet]
+    needs: [TweetImagePush, RetweetImagePush]
     runs-on: ubuntu-20.04
     env:
       AWS_REGION: us-east-1
