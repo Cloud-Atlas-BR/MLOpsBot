@@ -18,6 +18,3 @@ RUN pip install -r requirements.txt
 COPY app/ ./
 
 CMD [ "app.handler" ]
-
-
-# curl -H "Content-Type: application/json" -d @app/lambdaRetweet/tests/msg.json -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" 

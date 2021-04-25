@@ -14,7 +14,8 @@ do
 done
 
 docker build --build-arg ACCESS_KEY=${key} --build-arg SECRET_ACCESS=${secret} --build-arg REGION=${region} -t ${repository} ${context}
-docker run -p 9000:8080 ${repository}
+docker run -d -p 9000:8080 ${repository}
+curl -H "Content-Type: application/json" -d @app/lambdaRetweet/tests/msg.json -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" 
 
 if [ -z $test ]
 then
