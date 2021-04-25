@@ -71,13 +71,10 @@ jobs:
         run: |
           export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
           export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
-          echo $DIG_TWEET
-# export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
-# export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
-# aws cloudformation deploy \
-#   --stack-name ${{ env.STACK_NAME }}) \
-#   --template-file ${{ env.CFN_FILE }} \
-#   --capabilities CAPABILITY_NAMED_IAM \
-#   --parameter-overrides \
-#       DigestTweet=$DIG_TWEET \
-#       DigestRetweet=$DIG_RETWEET
+          aws cloudformation deploy \
+            --stack-name ${{ env.STACK_NAME }} \
+            --template-file ${{ env.CFN_FILE }} \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides \
+                DigestTweet=$DIG_TWEET \
+                DigestRetweet=$DIG_RETWEET
