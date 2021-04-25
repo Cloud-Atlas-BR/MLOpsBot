@@ -1,7 +1,7 @@
 import json
 import boto3
 import tweepy
-from secrets_manager import get_secret
+from src.secrets_manager import get_secret
 
 # Create interface with services
 s3 = boto3.client("s3")

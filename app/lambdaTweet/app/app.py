@@ -1,7 +1,7 @@
 import json
 import boto3
 import tweepy
-from secrets_manager import get_secret
+from src.secrets_manager import get_secret
 from botocore.config import Config
 
 # Create interface with services

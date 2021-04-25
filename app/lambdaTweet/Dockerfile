@@ -7,6 +7,6 @@ RUN pip install -U pip
 RUN pip install -r requirements.txt
 
 # Copy function code
-COPY app/* ./
+COPY app/ ./
 
 CMD [ "app.handler" ]
