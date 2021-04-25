@@ -35,9 +35,9 @@ jobs:
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
-            -t True
-              -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
-              -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            -t True \
+            -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   RetweetImageBuild:
     runs-on: ubuntu-20.04
     # needs: [UnitTestsStyle, ValidateCloudformation]
