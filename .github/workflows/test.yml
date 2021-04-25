@@ -12,30 +12,32 @@ jobs:
         run: |
           pip install flake8
           flake8 --ignore E501 app/
-  # TweetImageBuild:
-  #   runs-on: ubuntu-20.04
-  #   needs: [UnitTestsStyle, ValidateCloudformation]
-  #   env:
-  #     AWS_REGION: us-east-1
-  #     ECR_REPO: mlopsbot/tweets
-  #     DOCKER_CTX: app/lambdaTweet
-  #   steps:      
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Configure AWS credentials from your account
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ env.AWS_REGION }}
-  #     - name: Tweet Collection Image Build
-  #       run: | 
-  #         ./scripts/build_push.sh \
-  #           -r ${{ env.ECR_REPO }} \
-  #           -a ${{ secrets.ACCOUNT_ID }} \
-  #           -c ${{ env.DOCKER_CTX }} \
-  #           -g ${{ env.AWS_REGION }} \
-  #           -t True
+  TweetImageBuild:
+    runs-on: ubuntu-20.04
+    needs: [UnitTestsStyle, ValidateCloudformation]
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPO: mlopsbot/tweets
+      DOCKER_CTX: app/lambdaTweet
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from your account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Tweet Collection Image Build
+        run: | 
+          ./scripts/build_push.sh \
+            -r ${{ env.ECR_REPO }} \
+            -a ${{ secrets.ACCOUNT_ID }} \
+            -c ${{ env.DOCKER_CTX }} \
+            -g ${{ env.AWS_REGION }} \
+            -t True
+              -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   RetweetImageBuild:
     runs-on: ubuntu-20.04
     # needs: [UnitTestsStyle, ValidateCloudformation]
