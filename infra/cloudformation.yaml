@@ -223,3 +223,10 @@ Resources:
         Fn::GetAtt: 
           - "ScheduledRule"
           - "Arn"
+  BucketParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /CloudAtlas/MLOpsBot/Bucket
+      Type: String
+      Value: !Ref BucketS3
+      Description: MLOps Bot S3 Bucket
