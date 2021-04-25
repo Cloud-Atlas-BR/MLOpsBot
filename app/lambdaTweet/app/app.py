@@ -5,7 +5,7 @@ import tweepy
 from secrets_manager import get_secret
 from botocore.config import Config
 
-BUCKET_NAME = "mlops-bot-buckets3-a6fr0153942q"
+BUCKET_NAME = "mlops-bot-buckets3-1raofixybwfd6"
 
 # Create interface with services
 s3 = boto3.client("s3")
