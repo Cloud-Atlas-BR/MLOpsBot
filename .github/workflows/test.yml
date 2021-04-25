@@ -61,6 +61,7 @@ jobs:
             -t True
   ValidateCloudformation:
     runs-on: ubuntu-20.04
+    needs: [GetTweetImageDigest, GetRetweetImageDigest]
     env:
       AWS_REGION: us-east-1
       CFN_FILE: infra/cloudformation.yaml
