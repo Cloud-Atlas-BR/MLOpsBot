@@ -1,7 +1,7 @@
 name: Test and Validation
 on:
   push:
-    branches: [ develop, main ]
+    branches: [ develop ]
 jobs:
   UnitTestsStyle:
     runs-on: ubuntu-20.04
@@ -9,7 +9,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tweet Collection Image Build
-        run: | 
+        run: |
+          pip install flake8
           flake8 app/
   TweetImageBuild:
     runs-on: ubuntu-20.04
@@ -61,7 +62,7 @@ jobs:
             -t True
   ValidateCloudformation:
     runs-on: ubuntu-20.04
-    needs: [GetTweetImageDigest, GetRetweetImageDigest]
+    needs: [GetTweetImageDigest, GetRetweetImageDigest, UnitTestsStyle]
     env:
       AWS_REGION: us-east-1
       CFN_FILE: infra/cloudformation.yaml
