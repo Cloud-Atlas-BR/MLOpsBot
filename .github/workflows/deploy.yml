@@ -70,6 +70,7 @@ jobs:
       - name: Create or update lambda function
         run: |
           export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
+          export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
           echo $DIG_TWEET
 # export DIG_TWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_TWEET }})
 # export DIG_RETWEET=$(./scripts/image_digest.sh -r ${{ env.ECR_RETWEET }})
