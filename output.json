@@ -3,12 +3,12 @@
         {
             "registryId": "885248014373",
             "repositoryName": "mlopsbot/tweets",
-            "imageDigest": "sha256:a3c4ce568e58b7968f59d5da282375a155c67e9957dfd61cfff77a341ed4d4f3",
+            "imageDigest": "sha256:1403da49edef033ef07ada65edf259e4df49d9f2e76464a73793867c3d8f37c5",
             "imageTags": [
                 "latest"
             ],
-            "imageSizeInBytes": 195499649,
-            "imagePushedAt": "2021-04-24T21:18:53-03:00",
+            "imageSizeInBytes": 195499569,
+            "imagePushedAt": "2021-04-24T21:31:44-03:00",
             "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
             "artifactMediaType": "application/vnd.docker.container.image.v1+json"
         }
