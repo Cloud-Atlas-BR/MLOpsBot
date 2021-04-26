@@ -192,6 +192,12 @@ Resources:
                   - "tag:GetResources"
                   - "sqs:*"
                 Resource: '*'
+              - Effect: Allow
+                Action: 
+                  - "ssm:GetParameter"
+                Resource: !Sub
+                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${bucket_parameter}"
+                  - { bucket_parameter: !Ref BucketParameter }
       MaxSessionDuration: 3600 
   LambdaFunctionEventSourceMapping:
     Type: AWS::Lambda::EventSourceMapping
@@ -226,7 +232,7 @@ Resources:
   BucketParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /CloudAtlas/MLOpsBot/Bucket
+      Name: CloudAtlas/MLOpsBot/Bucket
       Type: String
       Value: !Ref BucketS3
       Description: MLOps Bot S3 Bucket
