@@ -108,7 +108,7 @@ Resources:
                   - ssm:GetParameter
                   - ssm:GetParameters
                 Resource: !Sub
-                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${bucket_parameter}"
+                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${bucket_parameter}
                   - { bucket_parameter: !Ref BucketParameter }
         - PolicyName: mlops-bot-tweets-policy
           PolicyDocument:
