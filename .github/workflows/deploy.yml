@@ -1,7 +1,5 @@
 name: MLOps Bot Deploy
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 jobs:

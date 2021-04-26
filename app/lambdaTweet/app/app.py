@@ -36,7 +36,4 @@ def handler(event, context):
                       Body=json.dumps(tweet).encode('utf-8'),
                       Key="tweets/" + tweet['id_str'] + ".json")
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps(event)
-    }
+    return {'statusCode': 200}
