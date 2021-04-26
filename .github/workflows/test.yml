@@ -1,10 +1,20 @@
 name: Test and Validation
 on:
   push:
-    branches: [ develop, main ]
+    branches: [ develop ]
 jobs:
+  UnitTestsStyle:
+    runs-on: ubuntu-20.04
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Tweet Collection Image Build
+        run: |
+          pip install flake8
+          flake8 --ignore E501 app/
   TweetImageBuild:
     runs-on: ubuntu-20.04
+    needs: [UnitTestsStyle, ValidateCloudformation]
     env:
       AWS_REGION: us-east-1
       ECR_REPO: mlopsbot/tweets
@@ -25,9 +35,12 @@ jobs:
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
-            -t True
+            -t True \
+            -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   RetweetImageBuild:
     runs-on: ubuntu-20.04
+    needs: [UnitTestsStyle, ValidateCloudformation]
     env:
       AWS_REGION: us-east-1
       ECR_REPO: mlopsbot/retweets
@@ -48,9 +61,12 @@ jobs:
             -a ${{ secrets.ACCOUNT_ID }} \
             -c ${{ env.DOCKER_CTX }} \
             -g ${{ env.AWS_REGION }} \
-            -t True
+            -t True \
+            -k ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -s ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   ValidateCloudformation:
     runs-on: ubuntu-20.04
+    needs: [GetTweetImageDigest, GetRetweetImageDigest, UnitTestsStyle]
     env:
       AWS_REGION: us-east-1
       CFN_FILE: infra/cloudformation.yaml

@@ -1,7 +1,7 @@
 import json
 import boto3
 import tweepy
-from secrets_manager import get_secret
+from src.secrets_manager import get_secret
 
 # Create interface with services
 s3 = boto3.client("s3")
@@ -16,6 +16,7 @@ auth.set_access_token(secrets["ACCESS_TOKEN"], secrets["ACCESS_TOKEN_SECRET"])
 # Instancia o cliente do Twitter
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
+
 def handler(event, context):
     print(event, flush=True)
     for msg in event["Records"]:
@@ -26,11 +27,8 @@ def handler(event, context):
         content = json.loads(tweet["Body"].read().decode("utf-8"))
         try:
             api.retweet(id=content["id"])
-            print(content)
-        except:
-            pass
+            print(content, flush=True)
+        except Exception:
+            print("Just done", flush=True)
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+    return {'statusCode': 200}
