@@ -99,6 +99,17 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       Policies:
+        - PolicyName: mlops-bot-tweets-ssm-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource: !Sub
+                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${bucket_parameter}"
+                  - { bucket_parameter: !Ref BucketParameter }
         - PolicyName: mlops-bot-tweets-policy
           PolicyDocument:
             Version: "2012-10-17"
@@ -157,17 +168,6 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       Policies:
-        - PolicyName: mlops-bot-tweets-ssm-policy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action: 
-                  - ssm:GetParameter
-                  - ssm:GetParameters
-                Resource: !Sub
-                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${bucket_parameter}"
-                  - { bucket_parameter: !Ref BucketParameter }
         - PolicyName: mlops-bot-tweets-policy
           PolicyDocument:
             Version: "2012-10-17"
