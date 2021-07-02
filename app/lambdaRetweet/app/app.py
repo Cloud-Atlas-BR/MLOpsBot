@@ -25,15 +25,18 @@ def handler(event, context):
         key = body["s3"]["object"]["key"]
         tweet = s3.get_object(Bucket=bucket, Key=key)
         content = json.loads(tweet["Body"].read().decode("utf-8"))
+        id=content["id"]
         try:
-            api.retweet(id=content["id"])
+            api.retweet(id=id)
             print(content, flush=True)
         except Exception:
             print("Just done", flush=True)
         try:
-            api.create_favorite(id=content["id"])
+            api.create_favorite(id=id)
             print(content, flush=True)
         except Exception:
             print("Just done", flush=True)
 
-    return {'statusCode': 200}
+    return {
+        'statusCode': 200
+    }
