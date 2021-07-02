@@ -30,5 +30,10 @@ def handler(event, context):
             print(content, flush=True)
         except Exception:
             print("Just done", flush=True)
+        try:
+            api.create_favorite(id=content["id"])
+            print(content, flush=True)
+        except Exception:
+            print("Just done", flush=True)
 
     return {'statusCode': 200}
