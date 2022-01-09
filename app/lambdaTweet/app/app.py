@@ -24,7 +24,7 @@ def handler(event, context):
     ssm_name = "/CloudAtlas/MLOpsBot/Bucket"
     bucket_name = ssm.get_parameter(Name=ssm_name)["Parameter"]["Value"]
 
-    results = api.search(q="-@Femisonic -bnb -kiiara -bitcoin (#MLOps) -filter:retweets",
+    results = api.search(q="-@10mmConversion -@Femisonic -bnb -kiiara -bitcoin (#MLOps) -filter:retweets",
                          result_type="recent",
                          count=50)
 
